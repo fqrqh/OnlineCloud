@@ -1,25 +1,72 @@
 import flet as ft
+import webbrowser
+import os
+import subprocess
+
+## en gros en haut c'est juste des services qu'on charge
+
 
 
 def main(page: ft.Page):
-    counter = ft.Text("0", size=50, data=0)
 
-    def increment_click(e: ft.Event[ft.FloatingActionButton]):
-        counter.data += 1
-        counter.value = str(counter.data)
+    ## Ca c'est pour etre sur que ce qu'on va choisir sur le dropdown va etre le bon truck
+    def handle_check_item_click(e: ft.Event[ft.PopupMenuItem]):
+        e.control.checked = not e.control.checked
+    
 
-    page.floating_action_button = ft.FloatingActionButton(
-        icon=ft.Icons.ADD, key="increment", on_click=increment_click
-    )
+
+    ## La tu start le server mais j'ai remplacer le truck par un D 
+    def start():
+       subprocess.run(["d"]) 
+
+
+    ## La sa ouvre la page avec le serv
+    def open():
+        url = 'https://localhost:9000'
+        webbrowser.open_new(url)
+
+
+    ## c'est pour voir qui est log mtn donc si tu clique il y aura ecrit ton nom
+    def user():
+        user = os.getlogin()
+        page.show_dialog(ft.SnackBar(ft.Text(f"The Logged user is {user}")))
+
+
+    ## la essaye de lire c'est juste le dropdown
     page.add(
         ft.SafeArea(
-            expand=True,
-            content=ft.Container(
-                content=counter,
-                alignment=ft.Alignment.CENTER,
-            ),
+            content=ft.PopupMenuButton(
+                key="popup",
+                data=1,
+                items=[
+                    ft.PopupMenuItem(icon=ft.Icons.HTTP,content="Start Server", on_click=start),
+                    ft.PopupMenuItem(icon=ft.Icons.ROUTER, content="Open Server", on_click=open),
+                    ft.PopupMenuItem(
+                        content=ft.Row(
+                            controls=[
+                                ft.Icon(ft.Icons.PERSON),
+                                ft.Text("Log Info"),
+                            ]
+                        ),
+                        on_click=user, 
+                    ),
+                    ft.PopupMenuItem(),
+                    ft.PopupMenuItem(
+                        content="Checked item",
+                        checked=False,
+                        on_click=handle_check_item_click,
+                    ),
+                ],
+            )
         )
     )
+
+
+   
+
+    
+   
+    
 
 
 if __name__ == "__main__":
